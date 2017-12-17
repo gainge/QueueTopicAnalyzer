@@ -1,5 +1,4 @@
 <<<<<<< HEAD
-<<<<<<< HEAD
 # TOM
 
 TOM (TOpic Modeling) is a Python 3 library for topic modeling and browsing, licensed under the MIT license. Its objective is to allow for an efficient analysis of a text corpus from start to finish, via the discovery of latent topics. To this end, TOM features functions for preparing and vectorizing a text corpus. It also offers a common interface for two topic models (namely LDA using either variational inference or Gibbs sampling, and NMF using alternating least-square with a projected gradient method), and implements three state-of-the-art methods for estimating the optimal number of topics to model a corpus. What is more, TOM constructs an interactive Web-based browser that makes it easy to explore a topic model and the related corpus.
@@ -141,10 +140,6 @@ print('\nTop 10 most relevant words for topic 2:',
 ![](http://mediamining.univ-lyon2.fr/people/guille/tom_resources/topic_details.jpg)
 ### Document details
 ![](http://mediamining.univ-lyon2.fr/people/guille/tom_resources/document_details.jpg)
-=======
-# cs301r_MainSite
-This is a repo containing the code for the desktop project.
->>>>>>> 8806ed90de951f8bd09e1f4ee9266cd0c97e3df3
 =======
 # cs301r_MainSite
 This is a repo containing the code for the desktop project.
