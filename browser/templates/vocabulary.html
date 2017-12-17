@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html">
+  <title>Vocabulary</title>
+  <!-- <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename = 'css/style.css') }}"/> -->
+  <!-- <link rel="stylesheet" type="text/css" href="css/main.css"/> -->
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename = 'css/main.css') }}"/>
+
+  <!-- Local File References  -->
+  <link rel="stylesheet" type="text/css" href="../static/css/main.css"/>
+  <link rel="stylesheet" href="../static/js/jquery_ui/jquery-ui.css">
+  <script scr="../static/js/d3.min.js"></script>
+  <script scr="../static/js/jquery_ui/jquery-ui.min.js"></script>
+
+</head>
+<body id="page-gallery">
+
+  <div id="gibNav">
+  <nav class="site-nav">
+      <div class="nav-bar"><a class="burger-button">
+          <div class="line"></div>
+          <div class="line"></div>
+          <div class="line"></div></a><img class="svg" src="assets/img/logo.svg">
+      </div>
+      <ul>
+        <li class="spacer-two"></li>
+        <li><a class="nav-home" href="index.html">Home</a>
+          <div class="under-line"></div>
+        </li>
+        <li class="divide">
+          <hr>
+        </li>
+        <li><a class="nav-topics" href="topic_cloud.html">Topics</a>
+          <div class="under-line"></div>
+        </li>
+        <li class="divide">
+          <hr>
+        </li>
+        <li><a class="nav-vocab" href="vocabulary.html">Vocabulary</a>
+          <div class="under-line"></div>
+        </li>
+        <li class="divide">
+          <hr>
+        </li>
+        <li class="extras">Info
+          <div class="under-line"></div>
+          <ul class="drop-down">
+            <li><a class="extras-contact" href="https://github.com/AdrienGuille/TOM">TOM Library</a></li>
+            <li><a class="extras-news" href="https://github.com/gainge/cs301r_MainSite">Code</a></li>
+            <li><a class="extras-track" href="https://drive.google.com/open?id=1WhofWuTW4ygzaPc5efIXtS2EqrM7UBTI">Raw Data</a></li>
+          </ul>
+        </li>
+        <li class="spacer"></li>
+      </ul>
+    </nav>
+  </div>
+
+
+    <div id="page-title">
+        <h1 id="title-string">Vocabulary</h1>
+        <p class="subtitle">Number of words : {{ vocabulary_size }}</p>
+    </div>
+    <div id="wrap" class="sans">
+    {% for vocabulary in splitted_vocabulary %}
+        <div id="five_columns">
+            <ul>
+                {% for indexed_word in vocabulary %}
+                    <li><a href="word/{{ indexed_word[0] }}.html">{{ indexed_word[1] }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endfor %}
+    </div>
+</body>

@@ -1,0 +1,47 @@
+{
+    "nodes": [
+        {
+            "name": 0,
+            "frequency": 0.1409114719748547,
+            "description": "map, google, fragment, activity, family",
+            "group": 0
+        },
+        {
+            "name": 1,
+            "frequency": 0.11969617600838053,
+            "description": "server, proxy, connecting, family, running",
+            "group": 1
+        },
+        {
+            "name": 2,
+            "frequency": 0.20324777370350722,
+            "description": "database, junit, testing, error, getting",
+            "group": 2
+        },
+        {
+            "name": 3,
+            "frequency": 0.16055526453640487,
+            "description": "function, tostring, equals, find, emboss",
+            "group": 3
+        },
+        {
+            "name": 4,
+            "frequency": 0.18674698795180508,
+            "description": "handler, file, fill, default, service",
+            "group": 4
+        },
+        {
+            "name": 5,
+            "frequency": 0.15610267155578683,
+            "description": "fragment, login, activity, main, switching",
+            "group": 5
+        },
+        {
+            "name": 6,
+            "frequency": 0.03273965426925103,
+            "description": "handlers, testing, test, junit, connect",
+            "group": 6
+        }
+    ],
+    "links": []
+}

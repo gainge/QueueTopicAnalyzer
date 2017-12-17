@@ -1,0 +1,15 @@
+Flask==0.12.2
+Flask-Cors==3.0.3
+
+glob2==0.5
+
+matplotlib==2.1.0
+
+nltk==3.2.4
+numpy==1.13.3
+pandas==0.20.3
+
+scikit-image==0.13.0
+scikit-learn==0.19.1
+scipy==0.19.1
+tom-lib==0.2.2

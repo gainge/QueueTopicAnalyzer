@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html">
+  <title>Topic and question browser</title>
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename = 'css/main.css') }}"/>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  <!-- <script type="text/javascript" src="home-scripts.js"></script> -->
+  <script src="{{ url_for('static', filename = 'js/d3.min.js' )}}"></script>
+
+  <!-- Local File References  -->
+  <link rel="stylesheet" type="text/css" href="../static/css/main.css"/>
+  <link rel="stylesheet" href="../static/js/jquery_ui/jquery-ui.css">
+  <script scr="../static/js/d3.min.js"></script>
+  <script scr="../static/js/jquery_ui/jquery-ui.min.js"></script>
+
+  <script src="{{ url_for('static', filename = 'js/jquery_ui/jquery-ui.min.js' )}}"></script>
+  <!-- <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script> -->
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
+
+</head>
+<!--  The id="page-home" controls which menu item is currently highlighted!! -->
+<body id="page-home">
+
+  <!--  We should maybe use a <header> tag here?  Might be fun to play with? -->
+  <div id="gibNav">
+  <nav class="site-nav">
+      <div class="nav-bar">
+        <a class="burger-button">
+          <div class="line"></div>
+          <div class="line"></div>
+          <div class="line"></div></a>
+          <img class="svg" src="assets/img/logo.svg">
+      </div>
+      <ul>
+        <li class="spacer-two"></li>
+        <li><a class="nav-home" href="index.html">Home</a>
+          <div class="under-line"></div>
+        </li>
+        <li class="divide">
+          <hr>
+        </li>
+        <li><a class="nav-topics" href="topic_cloud.html">Topics</a>
+          <div class="under-line"></div>
+        </li>
+        <li class="divide">
+          <hr>
+        </li>
+        <li><a class="nav-vocab" href="vocabulary.html">Vocabulary</a>
+          <div class="under-line"></div>
+        </li>
+        <li class="divide">
+          <hr>
+        </li>
+        <li class="extras">Info
+          <div class="under-line"></div>
+          <ul class="drop-down">
+            <li><a class="extras-contact" href="https://github.com/AdrienGuille/TOM">TOM Library</a></li>
+            <li><a class="extras-news" href="https://github.com/gainge/cs301r_MainSite">Code</a></li>
+            <li><a class="extras-track" href="https://drive.google.com/open?id=1WhofWuTW4ygzaPc5efIXtS2EqrM7UBTI">Raw Data</a></li>
+          </ul>
+        </li>
+        <li class="spacer"></li>
+      </ul>
+    </nav>
+  </div>
+
+    <div id="page-title">
+        <h1 id="title-string">Topic and question browser</h1>
+        <!-- <a href="https://github.com/AdrienGuille/TopicModeling">Built using the libraries available at https://github.com/AdrienGuille/TopicModeling</a> -->
+        <p class="subtitle"></p>
+    </div>
+
+
+    <!-- <button id="kevinbutton" name="classBtn" type="submit">Eventually this will update for a date range and class!</button>
+    <p id="ajax-result">Nothing Yet...</p> -->
+    <h1 id="content-header"></h1>
+
+    <div>
+        <fieldset>
+          <label for="radio-1">CS 240</label>
+          <input type="radio" name="class" value='cs240' id="radio-1" checked="checked">
+          <label for="radio-2">CS 224</label>
+          <input type="radio" name="class" value='cs224' id="radio-2">
+          <label for="radio-3">CS 236</label>
+          <input type="radio" name="class" value='cs236' id="radio-3">
+        </fieldset>
+    </div>
+
+    <div>
+      <div id="picker1">
+        <!-- <p>Start</p> -->
+        <input type="text" name="date" id="date_start">
+      </div>
+      <p id='picker-sep'> To </p>
+      <div id="picker2">
+        <!-- <p>End</p> -->
+        <input type="text" name="date" id="date_end">
+      </div>
+
+
+      <div id='intervals'>
+        <fieldset>
+          <label for="checkbox-semester">All Semester</label>
+          <input type="checkbox" name="checkbox-semester" id="checkbox-semester">
+        </fieldset>
+        <fieldset>
+          <label for="checkbox-term1">First Term</label>
+          <input type="checkbox" name="checkbox-term1" id="checkbox-term1">
+        </fieldset>
+        <fieldset>
+          <label for="checkbox-term2">Second Term</label>
+          <input type="checkbox" name="checkbox-term2" id="checkbox-term2">
+        </fieldset>
+    </div>
+
+    <div id='compute-section'>
+
+      <button id='compute-button' name='computeBtn' type='submit'>View Topics</button>
+
+      <div class="loader" id="load-spinner"></div>
+
+    </div>
+
+    <p id="please-wait">Computing Lots of Data!  Please be patient...</p>
+
+
+
+
+
+</body>
+
+
+<script>
+
+$(document).ready(function() {
+  // Hide the load-spinner
+  $('#load-spinner').hide();
+  $('#please-wait').hide();
+
+
+  // Initialize the radio buttons and crap
+  $( '[id^="checkbox"]').checkboxradio();
+  $('#checkbox-semester').prop('checked', true).checkboxradio('refresh');
+  $( 'fieldset').css({display: 'inline-block'});
+  // $( 'fieldset').css({padding-left: '0'});
+  // $( 'fieldset').css({padding-right: '0'});
+
+  $('#picker-sep').css(
+    {
+      fontSize: '20px',
+      padding: '8'
+    }
+  );
+
+  // Hook up the compute button and make it look nice!
+  $('#compute-button').button();
+  $('#compute-button').css({fontSize: '35px'});
+  $('#compute-button').css({display: 'inline-block'});
+  // $('compute-section').css({padding: '20px'})
+  $('#compute-button').css({height: '70px'});
+  // $('#compute-button').css({verticalAlign: 'middle'});
+  // $('#compute-button').css({marginTop: '40px'});
+
+
+
+  // $( "#checkbox-semester" ).checkboxradio();
+  var $classRadio = $( '[id^="radio-"]' );
+      $classRadio.checkboxradio();
+
+  $('label').css({ fontSize: '25px'}); // Selecting all label elements
+
+  $('fieldset').css({border: '0 none'});
+
+  // Rip I have to override it in here lol
+  $('[id^="picker"]').css({display: 'inline-block'});
+
+
+  // Now do the datepickers!
+  var $datepicker = $('[id^="date"]');
+      $datepicker.datepicker({ minDate: new Date(2017, 8, 1), maxDate: new Date(2017, 11, 8) });
+      $datepicker.datepicker('setDate', new Date());
+      $datepicker.css({ fontSize: '30px' });
+  $('#date_start').datepicker('setDate', new Date(2017, 8, 1))  // Set the start to go way back when
+  // $("[id^='date']").datepicker({ minDate: new Date(2017, 8, 1), maxDate: new Date(2017, 11, 8) }); // Letting the datepickers actually be ready to be datepickers
+
+  $('#kevinbutton').click(function(e) {
+      // $("#kevinbutton").attr("disabled", true);
+      // $.ajax({
+      //   url: 'classChange/',
+      //   method: 'POST',
+      //   data: {
+      //     'message': 'bobby'
+      //   },
+      //
+      //   success: function(e) {
+      //     console.log(e);
+      //     $("#kevinbutton").attr("disabled", false);
+      //     $("#ajax-result").html(e.class)
+      //
+      //   }
+      // });
+
+      var spinner = $('#load-spinner');
+
+      if (spinner.is(':visible')) {
+        spinner.hide();
+      }
+      else {
+        spinner.show();
+      }
+  });
+
+  // Wire up the checkboxes to do some cool stuff
+  $('#checkbox-semester').click(function(e) {
+      console.log("Semester clicked!")
+      if (this.checked) {
+        // It's checked! cool!
+        clearCheckboxes();
+        // re-check ourselves
+        $('#checkbox-semester').prop("checked", true).checkboxradio('refresh')
+
+        // Then modify the date range?
+        setDateRange(new Date(2017, 8, 1), new Date(2017, 11, 8));
+      }
+  });
+  $('#checkbox-term1').click(function(e) {
+    console.log("Term1 clicked!")
+      if (this.checked) {
+        // It's checked! cool!
+        clearCheckboxes();
+        // re-check ourselves
+        $('#checkbox-term1').prop("checked", true).checkboxradio('refresh')
+
+        // Then modify the date range?
+        setDateRange(new Date(2017, 8, 1), new Date(2017, 9, 15));
+      }
+  });
+  $('#checkbox-term2').click(function(e) {
+    console.log("Term2 clicked!")
+      if (this.checked) {
+        // It's checked! cool!
+        clearCheckboxes();
+        // re-check ourselves
+        $('#checkbox-term2').prop("checked", true).checkboxradio('refresh')
+
+        // Then modify the date range?
+        setDateRange(new Date(2017, 9, 15), new Date(2017, 11, 8));
+      }
+  });
+
+
+  // Main code for the computation button!
+  $('#compute-button').click(function(e) {
+      // disableElements(true)
+      var spinner = $('#load-spinner');
+      spinner.show();
+      $('#please-wait').show();
+
+      // Determine what our selected class is, default to 240
+      var className = 'cs240'
+      className = $("input[type='radio'][name='class']:checked").val();
+
+      console.log(className);
+
+      // Now, I guess we get the date values from the pickers?
+      var startDate = $('#date_start').datepicker( "getDate" );
+
+      console.log(startDate.getTime())
+
+      var endDate = $('#date_end').datepicker( "getDate" );
+      console.log(endDate);
+
+      // Step the date up to be in the evening, which is what we really care about
+      var time = endDate.getTime();
+      time = time + 80000000;
+      endDate.setTime(time);
+
+      console.log(endDate);
+      console.log(endDate.getTime());
+
+      // Swap so earlier date is always first
+      if (startDate.getTime() > endDate.getTime()) {
+        temp = startDate;
+        startDate = endDate;
+        endDate = temp;
+      }
+
+      // Now we should be all good to make a request!
+
+      $.ajax({
+        url: 'newData/',
+        method: 'POST',
+        data: {
+          'className': className,
+          'startTime': startDate.getTime(),
+          'endTime': endDate.getTime()
+        },
+
+        success: function(e) {
+          console.log(e);
+          spinner.hide();
+          // disableElements(false)
+          window.location.href = '/topic_cloud.html?a=' + getRandomInt(100, 1000);
+        }
+      });
+  });
+
+  function getRandomInt(min, max) {
+      min = Math.ceil(min);
+      max = Math.floor(max);
+      return Math.floor(Math.random() * (max - min)) + min; //The maximum is exclusive and the minimum is inclusive
+  }
+
+
+  function disableElements(disable) {
+    // Enables or disables all the cool elements on the page
+    $('#compute-button').prop("disabled", disabled)
+    // Radio buttons
+    $('[id^="radio-"]').prop("disabled", disabled)
+    // Date Pickers
+    $('[id^="date"]').prop("disabled", disabled)
+    // Checkboxes
+    $('[id^="checkbox"]').prop("disabled", disabled)
+  }
+
+  function clearCheckboxes() {
+    $('[id^="checkbox"]').prop("checked", false).checkboxradio('refresh')
+  }
+
+  function setDateRange(startDate, endDate) {
+    $('#date_start').datepicker('setDate', startDate)
+    $('#date_end').datepicker('setDate', endDate)
+  }
+
+});
+
+</script>

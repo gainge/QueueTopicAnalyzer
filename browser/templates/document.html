@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html">
+  <title>Details about question {{ doc_id }}</title>
+  <!-- <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename = 'css/style.css') }}"/> -->
+  <!-- <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename = 'css/main.css') }}"/> -->
+  <!-- <link rel="stylesheet" type="text/css" href="css/main.css"/> -->
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename = 'css/main.css') }}"/>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  <script type="text/javascript" src="home-scripts.js"></script>
+
+  <!-- Local File References  -->
+  <link rel="stylesheet" type="text/css" href="../static/css/main.css"/>
+  <link rel="stylesheet" href="../static/js/jquery_ui/jquery-ui.css">
+  <script scr="../static/js/d3.min.js"></script>
+  <script scr="../static/js/jquery_ui/jquery-ui.min.js"></script>
+
+</head>
+<style>
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.bar {
+  fill: #3DC9FF;
+}
+
+.bar:hover {
+  fill: #34aad8;
+}
+
+.x.axis path {
+  display: none;
+}
+</style>
+
+<body>
+
+  <div id="gibNav">
+  <nav class="site-nav">
+      <div class="nav-bar"><a class="burger-button">
+          <div class="line"></div>
+          <div class="line"></div>
+          <div class="line"></div></a><img class="svg" src="assets/img/logo.svg">
+      </div>
+      <ul>
+        <li class="spacer-two"></li>
+        <li><a class="nav-home" href="../index.html">Home</a>
+          <div class="under-line"></div>
+        </li>
+        <li class="divide">
+          <hr>
+        </li>
+        <li><a class="nav-topics" href="../topic_cloud.html">Topics</a>
+          <div class="under-line"></div>
+        </li>
+        <li class="divide">
+          <hr>
+        </li>
+        <li><a class="nav-vocab" href="../vocabulary.html">Vocabulary</a>
+          <div class="under-line"></div>
+        </li>
+        <li class="divide">
+          <hr>
+        </li>
+        <li class="extras">Info
+          <div class="under-line"></div>
+          <ul class="drop-down">
+            <li><a class="extras-contact" href="https://github.com/AdrienGuille/TOM">TOM Library</a></li>
+            <li><a class="extras-news" href="https://github.com/gainge/cs301r_MainSite">Code</a></li>
+            <li><a class="extras-track" href="https://drive.google.com/open?id=1WhofWuTW4ygzaPc5efIXtS2EqrM7UBTI">Raw Data</a></li>
+          </ul>
+        </li>
+        <li class="spacer"></li>
+      </ul>
+    </nav>
+  </div>
+
+
+  <!-- Pulling this div out made it match the others in appearance -->
+  <!-- Not sure why it was being like that though -->
+  <div id="page-title">
+      <!-- <h1 id="title-string">Details about question {{ doc_id }}</h1> -->
+      <h1 id="title-string">Question Details</h1>
+      <p class="subtitle">Student: {{ authors }} - Date: {{ year }}</p>
+  </div>
+
+  <section id="main-content">
+
+    <h1 id="question-header">"{{short_content}}"</h1>
+
+    <div id="wrap">
+        <div id="left_column">
+            <h2 class="sans">Topic repartition</h2>
+            <bar-chart></bar-chart>
+        </div>
+        <div id="right_column">
+            <h2 class="sans">Key Words</h2>
+            <ul class="sans">
+                {% for weighted_word in words %}
+                    {% if weighted_word[1] > 0 %}
+                        <li><strong><a href="../word/{{ weighted_word[2] }}.html">{{ weighted_word[0] }}</a></strong> ({{ weighted_word[1] }})</li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <div id="wrap">
+        <div id="left_column">
+            <h2 class="sans">Similar questions (top 5)</h2>
+            <ul class="sans">
+                {% for doc in documents %}
+                    <li>
+                        <a href="../document/{{ doc[3] }}.html">{{ doc[0] }}</a> ({{ doc[4] }})
+                        <br>
+                        {{ doc[1] }}
+                        <br>
+                        {{ doc[2] }}
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+  </section>
+</body>
+
+<script src="{{ url_for('static', filename = 'js/d3.min.js' )}}"></script>
+<script>
+var margin = {top: 10, right: 0, bottom: 60, left: 40},
+    width = 600 - margin.left - margin.right,
+    height = 350 - margin.top - margin.bottom;
+var x = d3.scale.ordinal()
+    .rangeRoundBands([0, width], .1);
+var y = d3.scale.linear()
+    .range([height, 0]);
+var xAxis = d3.svg.axis()
+    .scale(x)
+    .orient("bottom");
+var yAxis = d3.svg.axis()
+    .scale(y)
+    .orient("left");
+var svg = d3.select("bar-chart").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+d3.tsv("{{ url_for('static', filename = 'data/topic_distribution_d'+doc_id+'.tsv') }}", type, function(error, data) {
+  x.domain(data.map(function(d) { return d.topic; }));
+  y.domain([0, d3.max(data, function(d) { return d.weight; })]);
+  svg.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis)
+      .selectAll("text")
+            .style("text-anchor", "end")
+            .attr("dx", "-1em")
+            .attr("dy", "-0.7em")
+            .attr("transform", "rotate(-90)" );
+  svg.append("g")
+      .attr("class", "y axis")
+      .call(yAxis)
+    .append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 2)
+      .attr("dy", ".71em")
+      .style("text-anchor", "end")
+      .text("Weight");
+  svg.selectAll(".bar")
+      .data(data)
+    .enter().append("rect")
+      .on("click", function(d) { viewTopic(d.topic); })
+      .attr("class", "bar")
+      .attr("x", function(d) { return x(d.topic); })
+      .attr("width", x.rangeBand())
+      .attr("y", function(d) { return y(d.weight); })
+      .attr("height", function(d) { return height - y(d.weight); })
+});
+
+// $('.bar').click(function(e) {
+//   console.log("Click!");
+// });
+
+function viewTopic(topic) {
+  console.log(topic)
+  window.location = "../topic/"+topic.charAt(6)+".html";
+}
+
+function show_details(topic) {
+  console.log(topic);
+}
+
+function type(d) {
+  d.weight = +d.weight;
+  return d;
+}
+</script>
