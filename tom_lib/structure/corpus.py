@@ -17,6 +17,7 @@ __email__ = "adrien.guille@univ-lyon2.fr"
 
 class Corpus:
 
+    # constructor fot the corpus class
     def __init__(self,
                  source_file_path,
                  enqueueTime=1504224000000, # Default Values, whole semester contained
@@ -38,6 +39,8 @@ class Corpus:
 
         self.max_features = max_features
 
+        # Read in the questions from the SQL File!
+        # This will be read into a pandas data frame object
         try:
             con = lite.connect(source_file_path)
 
@@ -49,9 +52,6 @@ class Corpus:
             "ON q.removedBy = ta.NetId " \
             "WHERE PASSOFF = 'false' " \
             "AND enqueueTime BETWEEN " + str(enqueueTime) + " AND " + str(dequeueTime)
-            # Not testing this stuff yet
-            # The enqueue dequeue stuff
-            # MAKE SURE TO UNCOMMENT THE SLASH IN THE PLACE ABOVE LEL
 
             self.data_frame = pandas.read_sql_query(query, con)
         except lite.Error as e:
@@ -60,14 +60,13 @@ class Corpus:
             if con:
                 con.close()
 
-        # self.data_frame = pandas.read_csv(source_file_path, sep='\t', encoding='utf-8')
         if sample:
             self.data_frame = self.data_frame.sample(frac=0.8)
         self.data_frame.fillna(' ')
         self.size = self.data_frame.count(0)[0]
 
-        # making changes here to help the stopwords function correctly
-        # Hard coded kekekeke
+        # Stop words to be used by the vectorizer
+        # Pulled from the nltk english stopwords list, some of my own custom ones added.
         stop_words = [
         'i','me','my','myself','we','our','ours','ourselves','you','your','yours','yourself','yourselves','he','him','his','himself','she','her','hers','herself','it','its','itself','they',
         'them','their','theirs','themselves','what','which','who','whom','this','that','these','those','am','is','are','was','were','be','been','being','have','has','had','having','do',
@@ -97,6 +96,10 @@ class Corpus:
         vocab = vectorizer.get_feature_names()
         self.vocabulary = dict([(i, s) for i, s in enumerate(vocab)])
 
+
+    # Lots of cool accessor methods
+    # These are mostly intact from the original source, just a few things
+    #   Modified so that my dataframe plays nicely with the other parts
     def export(self, file_path):
         self.data_frame.to_csv(path_or_buf=file_path, sep='\t', encoding='utf-8')
 

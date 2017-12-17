@@ -74,38 +74,12 @@ def actualIndex():
     return index()
 
 
-# So we'll actually probably have to make this like... a one for all method
-# Like, it'll take in the date range and class, tell the builder to update the files
-#   Then get even more data from the builder in order to update our own stuff (variables)
-#   Then we'd have to re-render index.html?
-#   Maybe in the html, on the button press we can have the page display a waiting thing or something
-@app.route("/classChange/", methods=['POST'])
-def changeClass():
-    print("Yo Momma!")
-    message = request.form['message']
-    print(message)
-    # Attempt at testing file output stuff
-    builder.outputTest()
-
-    # Attempt to read the random number we just generated
-    output = "cool"
-    with open(os.path.join(MYDIR, "output/random.txt"), "r") as f:
-        output = f.read()
-
-
-    # Let's just try to refresh the topic model for now
-    # print("Telling Builder to Build the browser!!!")
-    # builder.buildBrowser(className)
-    # print("Reading corpus from builder")
-    # corpus = builder.getCorpus(className)
-    # print("Reading topic model from output directory")
-    # topic_model = utils.load_topic_model(os.path.join(MYDIR, builder.getTopicModelPath(className)))
-
-    return jsonify({ 'class': output }) # This is just json :)
-
+# The main entry point for data manipulation
+# This is where our helper computes the topics and writes the outpu to files
 @app.route("/newData/", methods=["POST"])
 def newData():
     print("Request for new data... beginning calculations")
+    # Retrieve the data from the request
     className = request.form['className']
     startTime = request.form['startTime']
     endTime = request.form['endTime']

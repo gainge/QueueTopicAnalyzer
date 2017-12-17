@@ -8,6 +8,7 @@ from tom_lib.structure.corpus import Corpus
 
 from random import *
 
+# The guys who wrote the foundational code for this project
 __author__ = "Adrien Guille"
 __email__ = "adrien.guille@univ-lyon2.fr"
 
@@ -19,12 +20,9 @@ def outputTest():
     with open(os.path.join(MYDIR, "output/random.txt"), "w") as f:
         f.write(str(random()))
 
-# Eventually we'll want this to take in parameters for the date range
-# But for now, it's just good enough to load like we've always been doing
-# It would also probably take in a class prefix parameter
-#       like  CS240 or CS236
-#       That way we could know what directory to save things into
-#       And we'll have a way to provide the caller with the topic model file path
+'''
+Construct a corpus object from the given paramters
+'''
 def getCorpus(className, startTime, endTime):
     # Parameters
     max_tf = 0.8
@@ -43,6 +41,9 @@ def getCorpus(className, startTime, endTime):
                     max_relative_frequency=max_tf,
                     min_absolute_frequency=min_tf)
 
+'''
+Using a corpus, construct a topic model and write the result to a file
+'''
 def buildTopicModel(className, startTime, endTime):
     print("Building Topic Model in build_topic_model.py")
     # Parameters
@@ -68,6 +69,9 @@ def buildTopicModel(className, startTime, endTime):
     utils.save_topic_model(topic_model, os.path.join(MYDIR, getTopicModelPath(className)))
 
 
+'''
+Build the corpus, topic model, and then write the necessary file to to the system.
+'''
 def buildBrowser(className, startTime, endTime):
     # Parameters
     max_tf = 0.8
@@ -107,12 +111,8 @@ def buildBrowser(className, startTime, endTime):
                                      os.path.join(MYDIR, 'browser/static/data/word_distribution') + str(topic_id) + '.tsv')
         utils.save_affiliation_repartition(topic_model.affiliation_repartition(topic_id),
                                            os.path.join(MYDIR, 'browser/static/data/affiliation_repartition') + str(topic_id) + '.tsv')
-        # evolution = []
-        # for i in range(2012, 2016):
-        #     evolution.append((i, topic_model.topic_frequency(topic_id, date=i)))
-        # utils.save_topic_evolution(evolution, os.path.join(MYDIR, 'browser/static/data/frequency') + str(topic_id) + '.tsv')
 
-    # Export details about documents
+    # Export details about questions
     for doc_id in range(topic_model.corpus.size):
         utils.save_topic_distribution(topic_model.topic_distribution_for_document(doc_id),
                                       os.path.join(MYDIR, 'browser/static/data/topic_distribution_d') + str(doc_id) + '.tsv')
@@ -125,16 +125,10 @@ def buildBrowser(className, startTime, endTime):
     # Associate documents with topics
     topic_associations = topic_model.documents_per_topic()
 
-    # Export per-topic author network
-    # The stuff below is giving us errors :(
-    # I think it has something to do with anaconda python
-    # Ultimate feelsbadman
 
-
-    # for topic_id in range(topic_model.nb_topics):
-    #     utils.save_json_object(corpus.collaboration_network(topic_associations[topic_id]),
-    #                            'browser/static/data/author_network' + str(topic_id) + '.json')
-
+'''
+A bunch of methods for constructing relative paths given a class name
+'''
 def getTopicModelPath(className):
     return 'output/' + str(className) + 'topics.tom'
 
