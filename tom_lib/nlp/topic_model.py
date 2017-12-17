@@ -14,6 +14,7 @@ __author__ = "Adrien Guille, Pavel Soriano"
 __email__ = "adrien.guille@univ-lyon2.fr"
 
 
+# Topic Model Class writtn by the guys over at TOM
 class TopicModel(object):
     __metaclass__ = ABCMeta
 
